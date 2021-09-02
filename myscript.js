@@ -12,6 +12,7 @@ function computerPlay() {
 
 let playerSelection = 'rOCk';
 
+//@Andrew's Logic - helped 
 const PLAYER = 'player';
 const COMPUTER = 'computer';
 
@@ -21,6 +22,7 @@ let SCISSORS = 'scissors';
  
 // WEAKNESSES is a POJO - using it as a map/hash/dictionary; 
 // to store key-value pairs. playerChoice is evaluted as key, and return what beats it
+//@Andrew's Logic 
 let WEAKNESSES = {
     [ROCK]: PAPER,
     [PAPER]: SCISSORS,
@@ -33,13 +35,13 @@ let WEAKNESSES = {
 //['rock', 'paper', 'scissor'].forEach(val => val.toUpperCase());
 
      
-/**
+/** 
  * @param {string} playerSelecton
  * @param {string} computerSelection 
  * @returns string - the winner or null if it's a draw 
  * @WEAKNESSESS[playerChoice] - it returns what beats playerChoice. 
  * Evaluted against computerSelection, if that same then means computer Wins else player wins. 
- * 
+ * @Andrew's logic 
  */
 
 function singlePlay(playerSelection, computerSelection){
