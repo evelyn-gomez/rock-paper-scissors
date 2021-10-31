@@ -1,85 +1,194 @@
-
-let paperBtn =document.querySelector('#paper');
-let rockBtn = document.querySelector('#rock');
-let scissorsBtn = document.querySelector('#scissors');
-
-// Computer returns random 'rock, paper or scissors';
-function computerPlay() {
-    let allOptions = ['rock','paper','scissors'];
-    let randomPick = Math.floor(Math.random() * allOptions.length);
-    return allOptions[randomPick];
-}
-
-let playerSelection = 'rOCk';
-
-//@Andrew's Logic - helped 
+const INITIAL_SCORE = 0;
+const MAX_SCORE = 5;
 const PLAYER = 'player';
 const COMPUTER = 'computer';
 
-let ROCK = 'rock';
-let PAPER = 'paper';
-let SCISSORS = 'scissors';
- 
-// WEAKNESSES is a POJO - using it as a map/hash/dictionary; 
-// to store key-value pairs. playerChoice is evaluted as key, and return what beats it
-//@Andrew's Logic 
-let WEAKNESSES = {
+const ROCK = 'rock';
+const PAPER = 'paper';    
+const SCISSORS = 'scissors';
+
+const ALL_OPTIONS = Object.freeze([
+    { name: 'Rock', value: ROCK, },
+    { name: 'Paper', value: PAPER },
+    { name: 'Scissors', value: SCISSORS }
+]);
+
+const WEAKNESSES = Object.freeze({
     [ROCK]: PAPER,
     [PAPER]: SCISSORS,
     [SCISSORS]: ROCK,
-};
+});
 
-// Object.keys(WEAKNESSES) => [ROCK, PAPER, SCISSORS].forEach(key => );
-// Object.values(WEAKNESSES) => [PAPER, SCISSORS, ROCK].forEach(val => );
-// Object.entries(WEAKNESSES) => [[ROCK, PAPER], [PAPER, SCISSORS], [SCISSORS, ROCK]].forEach(([key, val]) => );
-//['rock', 'paper', 'scissor'].forEach(val => val.toUpperCase());
+function getComputerChoice() {
+    let randomPick = Math.floor(Math.random() * ALL_OPTIONS.length);
+    return ALL_OPTIONS[randomPick].value;
+}
 
-     
-/** 
- * @param {string} playerSelecton
- * @param {string} computerSelection 
- * @returns string - the winner or null if it's a draw 
- * @WEAKNESSESS[playerChoice] - it returns what beats playerChoice. 
- * Evaluted against computerSelection, if that same then means computer Wins else player wins. 
- * @Andrew's logic 
- */
-
-function singlePlay(playerSelection, computerSelection){
-    let playerChoice = playerSelection.toLowerCase();
-    if (playerChoice === computerSelection) {
+function getWinner(pChoice, cChoice){
+    if (pChoice === cChoice) {
         return null;
     }
-    if (computerSelection === WEAKNESSES[playerChoice]) {
+
+    if (cChoice === WEAKNESSES[pChoice]) {
         return COMPUTER;
     }
+
     return PLAYER;
 }
- /**
-  * if computerPlay() returns null, default gets evaluted and the
-  * counter restarts from last iteration.
-  * @returns 
-  */
-function game() {
-    let setScore = [];
-    let computerScore = [];
-    for (let i = 1; i < 5; i++) {
-        let computerSelection = computerPlay(); 
-        let playerSelection = prompt('Choose your weapon! Rock, Paper, or Scissors');
-        let winner = singlePlay(playerSelection, computerSelection); 
-        switch (winner) {
-            case COMPUTER:
-                computerScore.push(1);
-                console.log(`You lose! ${computerSelection} beats ${playerSelection.toLowerCase()}.`);
-                break;
-            case PLAYER:
-                setScore.push(1);
-                console.log(`You win! ${playerSelection.toLowerCase()} beats ${computerSelection}.`);
-                break;
-            default:
-                i--;
-                console.log('No winner, play again.'); 
-                break;
+
+const startGame = () => {
+    let pScore = INITIAL_SCORE; 
+    let cScore = INITIAL_SCORE;
+
+    function updateScoreBoard() {
+        const cPara = document.querySelector('.computerScore p'); 
+        const pPara = document.querySelector('.playerScore p');
+        cPara.textContent = cScore;
+        pPara.textContent = pScore;
+    }
+
+    // initialize score board
+    updateScoreBoard();
+
+    // initialize option buttons
+    optionsContainer = document.querySelector('.optionsContainer');
+    for (let option of ALL_OPTIONS) {
+        let button = document.querySelector(`[data-option=${option.value}`);
+        if (!button) {
+            button = document.createElement('button');
+            button.setAttribute('data-option', option.value);
+            button.className = 'options';
+            button.onclick = () => onPlayerChoice(option.value);
+            button.textContent = option.name;
+            optionsContainer.appendChild(button);
         }
     }
-    return setScore.length < computerScore.length ? 'You lose!' : 'You win!';
+
+   
+    function updateScore(winner) {
+        if (winner === COMPUTER) {
+            console.log('c wins this round');
+            cScore++;
+        } 
+        if (winner === PLAYER) {
+            console.log('p wins this round');   
+            pScore++;
+        } else {
+            console.log('DRAW'); 
+        }
+        updateScoreBoard();
+    }
+
+    function checkGameEnded() {
+        if (pScore >= MAX_SCORE) {
+            alert('You win the game, c loses');
+            return true;
+        } else if (cScore >= MAX_SCORE) {
+            alert('You lose game, c wins');
+            return true;
+        } else {
+          return false;  
+        }
+    }
+
+    function clearGame() {
+        pScore = cScore = INITIAL_SCORE;
+    }
+
+    function onPlayerChoice(choice) {
+        let computerChoice = getComputerChoice();  
+        let winner = getWinner(choice, computerChoice); 
+        updateScore(winner);
+
+        setTimeout(() => {
+            let gameOver = checkGameEnded();
+            if (gameOver) {
+                clearGame();
+                resetPage();
+            }
+        });
+    }
 }
+
+const introScreen = document.querySelector('.intro');
+const playContainer = document.querySelector('.playContainer');
+const winnerScreen = document.querySelector('.winnerContainer')
+
+function initializePlayButton() {
+    const playBtn = document.querySelector('#introBtn'); 
+    playBtn.onclick = function() {
+        introScreen.classList.add('fadeOut');
+        playContainer.classList.add('fadeIn');
+        winnerScreen.classList.add('fadeOut');
+        startGame();
+    };    
+}
+
+function resetPage() {
+    introScreen.classList.remove('fadeOut');
+    playContainer.classList.remove('fadeIn');
+    winnerScreen.classList.remove('fadeOut');
+}
+
+
+function main() {
+    // collect each page element and store it in a const
+    // setActivePage(INTRO_PAGE)
+    initializePlayButton();
+}
+
+const MYCONST = 'asd';
+
+let mutableGlobalVar = 5
+
+class Person {
+    person;
+
+    init() {
+        let person = this.person
+        let personWithFullName = this.addLastName(person, 'Smith');
+        console.log(person.name);
+    };
+
+    /**
+     * Adds a last name to a person
+     * 
+     * @param {Object} person the person object to update
+     * @param {string} lastName the last name to add
+     * @returns a new person with fullName populated
+     */
+    addLastName(person, lastName) {
+        return { ...person, fullName: this.person.name + ' ' + lastName }
+    }
+}
+
+let myPerson = new Person();
+
+
+main();
+
+// // Array - Play 
+
+// // Object.keys(WEAKNESSES) => [ROCK, PAPER, SCISSORS].forEach(key => );
+// // Object.values(WEAKNESSES) => [PAPER, SCISSORS, ROCK].forEach(val => );
+// // Object.entries(WEAKNESSES) => [[ROCK, PAPER], [PAPER, SCISSORS], [SCISSORS, ROCK]].forEach(([key, val]) => );
+// //['rock', 'paper', 'scissor'].forEach(val => val.toUpperCase());
+
+// const INTRO_PAGE = 'introduction';
+// const GAME_PAGE = 'game';
+// const WINNER_PAGE = 'winner';
+
+// let activePage = GAME_PAGE;
+
+// function setActivePage(page) {
+//     for (let pageEl of pageElements) {
+//         let isActive = // pageEl.name === page
+//         if (isActive) {
+//             rootElement.appendChild(pageEl);
+//         } else {
+//             // remove if already appended
+//         }
+//     }
+// }
+
+// const pageElements = [];
