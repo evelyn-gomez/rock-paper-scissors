@@ -137,8 +137,6 @@ function main() {
     initializePlayButton();
 }
 
-const MYCONST = 'asd';
-
 let mutableGlobalVar = 5
 
 class Person {
